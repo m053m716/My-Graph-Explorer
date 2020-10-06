@@ -1,6 +1,7 @@
 import {
   IStackTokens, ITheme, styled
 } from 'office-ui-fabric-react';
+import { Resizable } from 're-resizable';
 import React, { Component } from 'react';
 import { InjectedIntl, injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
@@ -357,21 +358,29 @@ class App extends Component<IAppProps, IAppState> {
                 </>}
               </div>
             )}
-            <div className={layout}>
-              {graphExplorerMode === Mode.TryIt && headerMessaging(classes, query)}
+            <Resizable
+              defaultSize={{
+                width: 320,
+                height: 200,
+              }}
+            >
+              <div className={layout}>
+                {graphExplorerMode === Mode.TryIt && headerMessaging(classes, query)}
 
-              {displayContent && <>
-                <div style={{ marginBottom: 8 }}>
-                  <QueryRunner onSelectVerb={this.handleSelectVerb} />
-                </div>
-                {statusMessages(queryState, actions)}
-                {termsOfUseMessage(termsOfUse, actions, classes, geLocale)}
-                {
-                  // @ts-ignore
-                  <QueryResponse verb={this.state.selectedVerb} />
-                }
-              </>}
-            </div>
+                {displayContent && <>
+                  <div style={{ marginBottom: 8 }}>
+                    <QueryRunner onSelectVerb={this.handleSelectVerb} />
+                  </div>
+                  {statusMessages(queryState, actions)}
+                  {termsOfUseMessage(termsOfUse, actions, classes, geLocale)}
+                  {
+                    // @ts-ignore
+                    <QueryResponse verb={this.state.selectedVerb} />
+                  }
+                </>}
+              </div>
+            </Resizable>
+
           </div>
         </div>
       </ThemeContext.Provider>
