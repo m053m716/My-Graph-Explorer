@@ -8,7 +8,6 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import { IAdaptiveCardProps } from '../../../../types/adaptivecard';
 import { getAdaptiveCard } from '../../../services/actions/adaptive-cards-action-creator';
-import { appStyles } from './../../App.styles';
 import { queryResponseStyles } from './../queryResponse.styles';
 
 class AdaptiveCard extends Component<IAdaptiveCardProps> {
