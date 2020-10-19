@@ -5,6 +5,7 @@ import {
   FontSizes,
   FontWeights,
   getId,
+  GroupedList,
   GroupHeader,
   IColumn,
   Icon,
@@ -102,6 +103,8 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
     let isCollapsed = false;
     let previousCount = 0;
     let count = 0;
+    samples = samples.filter((sample: ISampleQuery) => sample.category === 'Getting Started');
+
 
     for (const query of samples) {
       if (!map.has(query.category)) {
@@ -319,6 +322,26 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
     );
   }
 
+
+  private onRenderCell = (nestingDepth?: number, item?: any, itemIndex?: number): React.ReactNode => {
+    const columns = [
+      { key: 'authRequiredIcon', name: '', fieldName: 'authRequiredIcon', minWidth: 20, maxWidth: 20 },
+      { key: 'method', name: '', fieldName: 'method', minWidth: 20, maxWidth: 50 },
+      { key: 'humanName', name: '', fieldName: 'humanName', minWidth: 100, maxWidth: 180 },
+      { key: 'button', name: '', fieldName: 'button', minWidth: 20, maxWidth: 20 },
+    ];
+    console.log({ item, nestingDepth, itemIndex });
+    return item && itemIndex && itemIndex > -1 ? (
+      <DetailsRow
+        columns={columns}
+        groupNestingDepth={nestingDepth}
+        item={item}
+        itemIndex={itemIndex}
+        selectionMode={SelectionMode.none}
+      />
+    ) : null;
+  };
+
   public render() {
     const { error, pending } = this.props.samples;
     const {
@@ -339,12 +362,9 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
     }
 
     const { groupedList } = this.state;
-    const columns = [
-      { key: 'authRequiredIcon', name: '', fieldName: 'authRequiredIcon', minWidth: 20, maxWidth: 20 },
-      { key: 'method', name: '', fieldName: 'method', minWidth: 20, maxWidth: 50 },
-      { key: 'humanName', name: '', fieldName: 'humanName', minWidth: 100, maxWidth: 180 },
-      { key: 'button', name: '', fieldName: 'button', minWidth: 20, maxWidth: 20 },
-    ];
+
+
+
 
     return (
       <div>
