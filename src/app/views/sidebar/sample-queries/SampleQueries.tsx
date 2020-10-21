@@ -103,8 +103,6 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
     let isCollapsed = false;
     let previousCount = 0;
     let count = 0;
-    samples = samples.filter((sample: ISampleQuery) => sample.category === 'Getting Started');
-
 
     for (const query of samples) {
       if (!map.has(query.category)) {
@@ -223,31 +221,31 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
     }
   };
 
-  public renderRow = (props: any): any => {
-    const { tokenPresent } = this.props;
-    const classes = classNames(this.props);
-    let selectionDisabled = false;
+  // public renderRow = (props: any): any => {
+  //   const { tokenPresent } = this.props;
+  //   const classes = classNames(this.props);
+  //   let selectionDisabled = false;
 
-    if (props) {
-      if (!tokenPresent && props.item.method !== 'GET') {
-        selectionDisabled = true;
-      }
-      return (
-        <div className={classes.groupHeader}>
-          <DetailsRow
-            {...props}
-            onClick={() => {
-              if (!selectionDisabled) {
-                this.querySelected(props.item);
-              }
-            }}
-            className={classes.queryRow + ' ' + (selectionDisabled ? classes.rowDisabled : '')}
-            data-selection-disabled={selectionDisabled}
-          />
-        </div>
-      );
-    }
-  };
+  //   if (props) {
+  //     if (!tokenPresent && props.item.method !== 'GET') {
+  //       selectionDisabled = true;
+  //     }
+  //     return (
+  //       <div className={classes.groupHeader}>
+  //         <DetailsRow
+  //           {...props}
+  //           onClick={() => {
+  //             if (!selectionDisabled) {
+  //               this.querySelected(props.item);
+  //             }
+  //           }}
+  //           className={classes.queryRow + ' ' + (selectionDisabled ? classes.rowDisabled : '')}
+  //           data-selection-disabled={selectionDisabled}
+  //         />
+  //       </div>
+  //     );
+  //   }
+  // };
 
   private querySelected = (query: any) => {
     const { actions, tokenPresent, profile } = this.props;
@@ -316,30 +314,47 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
     );
   }
 
-  private renderDetailsHeader() {
-    return (
-      <div />
-    );
-  }
+  //  private renderDetailsHeader() {
+  //   return (
+  //     <div />
+  //   );
+  // }
 
-
-  private onRenderCell = (nestingDepth?: number, item?: any, itemIndex?: number): React.ReactNode => {
+  public renderCell = (props: any, item: any, nestingDepth?: number, itemIndex?: number): any => {
+    const { tokenPresent } = this.props;
+    const classes = classNames(this.props);
+    let selectionDisabled = false;
     const columns = [
       { key: 'authRequiredIcon', name: '', fieldName: 'authRequiredIcon', minWidth: 20, maxWidth: 20 },
       { key: 'method', name: '', fieldName: 'method', minWidth: 20, maxWidth: 50 },
       { key: 'humanName', name: '', fieldName: 'humanName', minWidth: 100, maxWidth: 180 },
       { key: 'button', name: '', fieldName: 'button', minWidth: 20, maxWidth: 20 },
     ];
-    console.log({ item, nestingDepth, itemIndex });
-    return item && itemIndex && itemIndex > -1 ? (
-      <DetailsRow
-        columns={columns}
-        groupNestingDepth={nestingDepth}
-        item={item}
-        itemIndex={itemIndex}
-        selectionMode={SelectionMode.none}
-      />
-    ) : null;
+
+    if (item) {
+      if (!tokenPresent && item.method !== 'GET') {
+        selectionDisabled = true;
+      }
+      return itemIndex && itemIndex > -1 ? (
+        <DetailsRow
+          columns={columns}
+          groupNestingDepth={nestingDepth}
+          item={item}
+          itemIndex={itemIndex}
+          selectionMode={SelectionMode.none}
+          onRenderItemColumn={this.renderItemColumn}
+          {...props}
+          onClick={() => {
+            if (!selectionDisabled) {
+              this.querySelected(item);
+            }
+          }}
+          className={classes.queryRow + ' ' + (selectionDisabled ? classes.rowDisabled : '')}
+          data-selection-disabled={selectionDisabled}
+
+        />
+      ) : null;
+    }
   };
 
   public render() {
@@ -362,10 +377,6 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
     }
 
     const { groupedList } = this.state;
-
-
-
-
     return (
       <div>
         <SearchBox
@@ -391,22 +402,15 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
           </a>
         </MessageBar>
         <Announced message={`${groupedList.samples.length} search results available.`} />
-        <DetailsList className={classes.queryList}
-          cellStyleProps={{
-            cellRightPadding: 0,
-            cellExtraRightPadding: 0,
-            cellLeftPadding: 0,
-          }}
-          onRenderItemColumn={this.renderItemColumn}
+        <GroupedList className={classes.queryList}
           items={groupedList.samples}
           selectionMode={SelectionMode.none}
-          columns={columns} groups={groupedList.categories}
+          groups={groupedList.categories}
           groupProps={{
             showEmptyGroups: true,
             onRenderHeader: this.renderGroupHeader,
           }}
-          onRenderRow={this.renderRow}
-          onRenderDetailsHeader={this.renderDetailsHeader}
+          onRenderCell={this.renderCell}
         />
       </div>
     );
