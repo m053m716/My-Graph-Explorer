@@ -130,6 +130,7 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
     });
   }
 
+
   public renderItemColumn = (item: any, index: number | undefined, column: IColumn | undefined) => {
     const classes = classNames(this.props);
     const {
@@ -320,42 +321,7 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
   //   );
   // }
 
-  public renderCell = (props: any, item: any, nestingDepth?: number, itemIndex?: number): any => {
-    const { tokenPresent } = this.props;
-    const classes = classNames(this.props);
-    let selectionDisabled = false;
-    const columns = [
-      { key: 'authRequiredIcon', name: '', fieldName: 'authRequiredIcon', minWidth: 20, maxWidth: 20 },
-      { key: 'method', name: '', fieldName: 'method', minWidth: 20, maxWidth: 50 },
-      { key: 'humanName', name: '', fieldName: 'humanName', minWidth: 100, maxWidth: 180 },
-      { key: 'button', name: '', fieldName: 'button', minWidth: 20, maxWidth: 20 },
-    ];
 
-    if (item) {
-      if (!tokenPresent && item.method !== 'GET') {
-        selectionDisabled = true;
-      }
-      return itemIndex && itemIndex > -1 ? (
-        <DetailsRow
-          columns={columns}
-          groupNestingDepth={nestingDepth}
-          item={item}
-          itemIndex={itemIndex}
-          selectionMode={SelectionMode.none}
-          onRenderItemColumn={this.renderItemColumn}
-          {...props}
-          onClick={() => {
-            if (!selectionDisabled) {
-              this.querySelected(item);
-            }
-          }}
-          className={classes.queryRow + ' ' + (selectionDisabled ? classes.rowDisabled : '')}
-          data-selection-disabled={selectionDisabled}
-
-        />
-      ) : null;
-    }
-  };
 
   public render() {
     const { error, pending } = this.props.samples;
@@ -377,6 +343,28 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
     }
 
     const { groupedList } = this.state;
+    if (!groupedList.samples || !groupedList.categories || groupedList.categories.length === 0) {
+      return (
+        <Spinner
+          className={classes.spinner}
+          size={SpinnerSize.large}
+          label={`${messages['loading samples']} ...`}
+          ariaLive='assertive'
+          labelPosition='top' />
+      );
+    }
+    const columns = generateColumns(groupedList);
+
+    console.log({ columns });
+    const onRenderCell = (nestingDepth?: number, item?: any, itemIndex?: number): React.ReactNode => (
+      <DetailsRow
+        columns={columns}
+        groupNestingDepth={nestingDepth}
+        item={item}
+        itemIndex={itemIndex!}
+        selectionMode={SelectionMode.none}
+      />
+    );
     return (
       <div>
         <SearchBox
@@ -410,12 +398,33 @@ export class SampleQueries extends Component<ISampleQueriesProps, any> {
             showEmptyGroups: true,
             onRenderHeader: this.renderGroupHeader,
           }}
-          onRenderCell={this.renderCell}
+          onRenderCell={onRenderCell}
         />
       </div>
     );
   }
 
+}
+
+function generateColumns(groupedList: any) {
+  if (groupedList && groupedList.samples && groupedList.samples.length) {
+    return Object.keys(groupedList.samples[0])
+      .slice(0, 1)
+      .map(
+        (key: string): IColumn => ({
+          key,
+          name: 'name',
+          fieldName: key,
+          minWidth: 20,
+        })
+      );
+  }
+  return [{
+    key: '1',
+    name: 'name',
+    fieldName: 'name',
+    minWidth: 20,
+  }];
 }
 
 function displayTipMessage(actions: any, selectedQuery: ISampleQuery) {
